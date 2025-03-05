@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../../../ec2_credentails.yml
+  tasks:
+    - name: S3 versioning checking
+      amazon.aws.s3_bucket_info:
+        region: us-east-1
+        aws_access_key: "{{ ec2_access_key }}"
+        aws_secret_key: "{{ ec2_secret_key }}"
+      register: result
+
+    - ansible.builtin.debug: 
+        var: result
+
+    - name: Enable versioning on S3 bucket
+      amazon.aws.s3_bucket:
+        aws_access_key: "{{ ec2_access_key }}"
+        aws_secret_key: "{{ ec2_secret_key }}"
+        name: "{{ item.name }}"
+        versioning: yes
+      loop: "{{ result.buckets }}" 
