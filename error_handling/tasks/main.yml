@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: installing the docker
+      ansible.builtin.command: yum -y install docker
+       # name: httpd
+       # state: present
+    - name: checking docker version
+      ansible.builtin.command: docker --version
+      register: output
+
+    - ansible.builtin.debug: 
+        var: output
+        
+
+    - name: update openssl and openssh to latest
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: latest
+
+      loop:
+        - openssl
+        - openssh
+      ignore_errors: yes
+
